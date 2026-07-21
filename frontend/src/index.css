@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-orange: #f97316;
+  --color-brand-orange-hover: #ea580c;
+  --color-brand-purple: #8b5cf6;
+  --color-brand-purple-hover: #7c3aed;
+  
+  --color-bg-dark: #121217; 
+  --color-bg-card: #1c1c21;
+  --color-bg-card-hover: #232329;
+  
+  --color-border-dark: #2f2f37;
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-bg-dark text-slate-300 font-sans antialiased;
+  }
+  /* Custom scrollbar for a sleek look */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent; 
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-700 rounded-full; 
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-600; 
+  }
+}

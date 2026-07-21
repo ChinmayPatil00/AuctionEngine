@@ -1,0 +1,9 @@
+{
+  "name": "createrflow-root",
+  "version": "1.0.0",
+  "description": "Root package for deploying frontend and backend together",
+  "scripts": {
+    "build": "cd frontend && npm install && npm run build && cd ../backend && npm install",
+    "start": "cd backend && node server.js"
+  }
+}
