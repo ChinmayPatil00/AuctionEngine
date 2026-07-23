@@ -20,6 +20,12 @@ const MediaLibraryView = () => {
     fetchMedia();
   }, []);
 
+  const getMediaUrl = (urlPath) => {
+    const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+    const baseUrl = apiBase.replace(/\/api\/?$/, '');
+    return `${baseUrl}${urlPath}`;
+  };
+
   const fetchMedia = async () => {
     try {
       const response = await api.get('/media');
@@ -131,9 +137,9 @@ const MediaLibraryView = () => {
             <div key={media._id} className="bg-bg-card border border-border-dark rounded-xl overflow-hidden group">
               <div className="aspect-video bg-slate-800 relative overflow-hidden">
                 {media.type === 'video' ? (
-                  <video src={`http://localhost:5000${media.url}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  <video src={getMediaUrl(media.url)} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 ) : (
-                  <img src={`http://localhost:5000${media.url}`} alt={media.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  <img src={getMediaUrl(media.url)} alt={media.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 )}
                 <div className="absolute top-2 right-2 p-1.5 bg-black/50 backdrop-blur rounded text-white">
                   {media.type === 'image' ? <ImageIcon size={14} /> : <Video size={14} />}
