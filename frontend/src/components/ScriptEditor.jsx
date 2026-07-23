@@ -2,9 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
-import UnderlineExtension from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
-import LinkExtension from '@tiptap/extension-link';
 import ImageExtension from '@tiptap/extension-image';
 import { Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, List, ListOrdered, Link, Link2, Image as ImageIcon, Play, Pause, X } from 'lucide-react';
 import { useDebounce } from '../hooks/useDebounce';
@@ -119,10 +117,10 @@ const MenuBar = ({ editor }) => {
 };
 
 const defaultExtensions = [
-  StarterKit,
-  UnderlineExtension,
+  StarterKit.configure({
+    link: { openOnClick: false }
+  }),
   TextAlign.configure({ types: ['heading', 'paragraph'] }),
-  LinkExtension.configure({ openOnClick: false }),
   ImageExtension,
 ];
 
