@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
@@ -119,15 +119,17 @@ const MenuBar = ({ editor }) => {
 };
 
 const SectionEditor = ({ title, content, onChange, placeholder, onFocus, minHeight = 'min-h-[80px]' }) => {
+  const extensions = useMemo(() => [
+    StarterKit,
+    Placeholder.configure({ placeholder }),
+    UnderlineExtension,
+    TextAlign.configure({ types: ['heading', 'paragraph'] }),
+    LinkExtension.configure({ openOnClick: false }),
+    ImageExtension,
+  ], [placeholder]);
+
   const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Placeholder.configure({ placeholder }),
-      UnderlineExtension,
-      TextAlign.configure({ types: ['heading', 'paragraph'] }),
-      LinkExtension.configure({ openOnClick: false }),
-      ImageExtension,
-    ],
+    extensions,
     content,
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
