@@ -118,14 +118,18 @@ const MenuBar = ({ editor }) => {
   );
 };
 
+const defaultExtensions = [
+  StarterKit,
+  UnderlineExtension,
+  TextAlign.configure({ types: ['heading', 'paragraph'] }),
+  LinkExtension.configure({ openOnClick: false }),
+  ImageExtension,
+];
+
 const SectionEditor = ({ title, content, onChange, placeholder, onFocus, minHeight = 'min-h-[80px]' }) => {
   const [extensions] = useState(() => [
-    StarterKit,
-    Placeholder.configure({ placeholder }),
-    UnderlineExtension,
-    TextAlign.configure({ types: ['heading', 'paragraph'] }),
-    LinkExtension.configure({ openOnClick: false }),
-    ImageExtension,
+    ...defaultExtensions,
+    Placeholder.configure({ placeholder })
   ]);
 
   const editor = useEditor({
