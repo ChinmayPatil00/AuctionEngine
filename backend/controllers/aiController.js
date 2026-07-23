@@ -24,7 +24,7 @@ const generateSuggestion = async (req, res) => {
     }
 
     const genAI = getGeminiInstance(req);
-    const model = genAI.getGenerativeModel({ model: 'gemini-flash-latest' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
     let fullPrompt = `You are an expert content creation assistant for a YouTuber/Creator.\n`;
     
