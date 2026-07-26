@@ -3,13 +3,15 @@ const Bid = require('../models/Bid');
 
 const createAuction = async (req, res) => {
   try {
-    const { title, description, imageUrl, startingPrice, durationMinutes } = req.body;
+    const { title, description, imageUrl, startingPrice, durationMinutes, delayMinutes } = req.body;
 
     if (!title || !description || !startingPrice || !durationMinutes) {
       return res.status(400).json({ message: 'Please provide all required fields' });
     }
 
-    const endTime = new Date(Date.now() + durationMinutes * 60000);
+    const delay = delayMinutes ? parseInt(delayMinutes) : 0;
+    const startTime = new Date(Date.now() + delay * 60000);
+    const endTime = new Date(startTime.getTime() + durationMinutes * 60000);
 
     const auction = await AuctionItem.create({
       title,
@@ -18,6 +20,7 @@ const createAuction = async (req, res) => {
       startingPrice,
       currentPrice: startingPrice,
       seller: req.user._id,
+      startTime,
       endTime,
     });
 
@@ -29,10 +32,47 @@ const createAuction = async (req, res) => {
 
 const getActiveAuctions = async (req, res) => {
   try {
-    const auctions = await AuctionItem.find({ status: 'active', endTime: { $gt: new Date() } })
+    const auctions = await AuctionItem.find({ 
+      status: 'active', 
+      startTime: { $lte: new Date() },
+      endTime: { $gt: new Date() } 
+    })
       .populate('seller', 'username')
       .populate('highestBidder', 'username')
       .sort({ endTime: 1 });
+    
+    res.status(200).json(auctions);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const getUpcomingAuctions = async (req, res) => {
+  try {
+    const auctions = await AuctionItem.find({ 
+      status: 'active', 
+      startTime: { $gt: new Date() } 
+    })
+      .populate('seller', 'username')
+      .sort({ startTime: 1 });
+    
+    res.status(200).json(auctions);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const getEndedAuctions = async (req, res) => {
+  try {
+    const auctions = await AuctionItem.find({ 
+      $or: [
+        { status: 'ended' },
+        { endTime: { $lte: new Date() } }
+      ]
+    })
+      .populate('seller', 'username')
+      .populate('highestBidder', 'username')
+      .sort({ endTime: -1 });
     
     res.status(200).json(auctions);
   } catch (error) {
@@ -64,5 +104,7 @@ const getAuctionById = async (req, res) => {
 module.exports = {
   createAuction,
   getActiveAuctions,
+  getUpcomingAuctions,
+  getEndedAuctions,
   getAuctionById
 };

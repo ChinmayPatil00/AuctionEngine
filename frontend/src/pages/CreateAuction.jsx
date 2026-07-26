@@ -8,6 +8,7 @@ const CreateAuction = () => {
   const [imageUrl, setImageUrl] = useState('');
   const [startingPrice, setStartingPrice] = useState('');
   const [durationMinutes, setDurationMinutes] = useState('5');
+  const [delayMinutes, setDelayMinutes] = useState('0');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -28,7 +29,8 @@ const CreateAuction = () => {
         description,
         imageUrl: imageUrl || undefined,
         startingPrice: Number(startingPrice),
-        durationMinutes: Number(durationMinutes)
+        durationMinutes: Number(durationMinutes),
+        delayMinutes: Number(delayMinutes)
       }, {
         headers: { Authorization: `Bearer ${user.token}` }
       });
@@ -81,7 +83,7 @@ const CreateAuction = () => {
           />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-400 mb-1">Starting Price ($)</label>
             <input 
@@ -95,15 +97,28 @@ const CreateAuction = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-1">Auction Duration</label>
+            <label className="block text-sm font-medium text-gray-400 mb-1">Start Time</label>
+            <select 
+              className="w-full px-4 py-2 bg-background border border-gray-700 rounded-lg focus:outline-none focus:border-accent text-white"
+              value={delayMinutes}
+              onChange={(e) => setDelayMinutes(e.target.value)}
+            >
+              <option className="bg-gray-900 text-white" value="0">Immediately</option>
+              <option className="bg-gray-900 text-white" value="5">In 5 Minutes</option>
+              <option className="bg-gray-900 text-white" value="60">In 1 Hour</option>
+              <option className="bg-gray-900 text-white" value="1440">In 24 Hours</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-1">Duration</label>
             <select 
               className="w-full px-4 py-2 bg-background border border-gray-700 rounded-lg focus:outline-none focus:border-accent text-white"
               value={durationMinutes}
               onChange={(e) => setDurationMinutes(e.target.value)}
             >
-              <option className="bg-gray-900 text-white" value="1">1 Minute (Testing)</option>
-              <option className="bg-gray-900 text-white" value="5">5 Minutes</option>
-              <option className="bg-gray-900 text-white" value="15">15 Minutes</option>
+              <option className="bg-gray-900 text-white" value="1">1 Min (Test)</option>
+              <option className="bg-gray-900 text-white" value="5">5 Mins</option>
+              <option className="bg-gray-900 text-white" value="15">15 Mins</option>
               <option className="bg-gray-900 text-white" value="60">1 Hour</option>
             </select>
           </div>

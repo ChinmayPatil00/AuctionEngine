@@ -31,6 +31,10 @@ const auctionItemSchema = new mongoose.Schema({
     ref: 'User',
     default: null,
   },
+  startTime: {
+    type: Date,
+    default: Date.now,
+  },
   endTime: {
     type: Date,
     required: true,
