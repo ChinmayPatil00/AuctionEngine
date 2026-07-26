@@ -55,16 +55,39 @@ function App() {
         </header>
       </div>
 
-      <main className="max-w-6xl mx-auto pt-8 px-4">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-10">
         <Routes>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/create-auction" element={<CreateAuction />} />
-          <Route path="/auction/:id" element={<AuctionRoom />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/create-auction" element={<CreateAuction />} />
+          <Route path="/auction/:id" element={<AuctionRoom />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </main>
+
+      {/* Developer Footer for Testing */}
+      <footer className="mt-20 border-t border-gray-800 py-10 text-center">
+        <div className="max-w-6xl mx-auto px-4 flex flex-col items-center justify-center gap-4">
+          <p className="text-gray-500 text-sm font-serif">Auction Engine &copy; 2026. All rights reserved.</p>
+          <button 
+            onClick={async () => {
+              try {
+                const axios = (await import('axios')).default;
+                const url = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+                const res = await axios.get(`${url}/auctions/seed`);
+                alert(res.data.message);
+                window.location.reload();
+              } catch (err) {
+                alert('Failed to seed database: ' + err.response?.data?.message || err.message);
+              }
+            }}
+            className="text-xs text-gray-700 hover:text-accent transition-colors underline decoration-dotted"
+          >
+            [Dev Tool] Seed Database with Test Data
+          </button>
+        </div>
+      </footer>
     </div>
   );
 }
