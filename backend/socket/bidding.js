@@ -22,6 +22,8 @@ const processBid = async (auctionId, userId, bidAmount, io) => {
     const user = await User.findById(userId);
 
     if (!auction || !user) {
+      console.error(`[DEBUG] Auction or User not found! auctionId=${auctionId}, userId=${userId}`);
+      console.error(`[DEBUG] Found Auction: ${!!auction}, Found User: ${!!user}`);
       await redisClient.del(lockKey);
       return { success: false, message: 'Auction or User not found.' };
     }

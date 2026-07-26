@@ -50,7 +50,12 @@ const AuctionRoom = () => {
 
   // 2. Setup Socket.io
   useEffect(() => {
-    const socketUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
+    // Smart fallback: If SOCKET_URL is missing, infer it from API_URL
+    let socketUrl = import.meta.env.VITE_SOCKET_URL;
+    if (!socketUrl) {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      socketUrl = apiUrl.replace('/api', '');
+    }
     // Pass JWT token for secure backend authentication
     const newSocket = io(socketUrl, {
       auth: {
