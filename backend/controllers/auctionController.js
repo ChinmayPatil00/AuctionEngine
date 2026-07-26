@@ -107,11 +107,15 @@ const seedAuctions = async (req, res) => {
     const user = await User.findOne();
     if (!user) return res.status(400).json({ message: 'Register a user first' });
 
+    // Wipe existing test data to prevent duplicates when clicking seed multiple times
+    await AuctionItem.deleteMany({});
+    await Bid.deleteMany({});
+
     const upcomingAuctions = [
       {
         title: '2024 Porsche 911 GT3 RS',
         description: 'Pristine condition, heavily optioned 911 GT3 RS in Shark Blue.',
-        imageUrl: 'https://images.unsplash.com/photo-1503376712351-1c4360cb6e22?q=80&w=800&auto=format&fit=crop',
+        imageUrl: 'https://images.unsplash.com/photo-1503376712351-1c4360cb6e22?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
         startingPrice: 285000,
         currentPrice: 285000,
         seller: user._id,
@@ -121,7 +125,7 @@ const seedAuctions = async (req, res) => {
       {
         title: 'Rare 1st Edition Charizard PSA 10',
         description: 'Gem Mint PSA 10 First Edition Base Set Charizard.',
-        imageUrl: 'https://images.unsplash.com/photo-1613771404721-1f92d799e49f?q=80&w=800&auto=format&fit=crop',
+        imageUrl: 'https://images.unsplash.com/photo-1613771404721-1f92d799e49f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
         startingPrice: 150000,
         currentPrice: 150000,
         seller: user._id,
@@ -134,7 +138,7 @@ const seedAuctions = async (req, res) => {
       {
         title: 'Original Apple-1 Computer',
         description: 'Fully functional, authenticated Apple-1 motherboard from 1976.',
-        imageUrl: 'https://images.unsplash.com/photo-1517077304055-6e89abf0ceb6?q=80&w=800&auto=format&fit=crop',
+        imageUrl: 'https://images.unsplash.com/photo-1517077304055-6e89abf0ceb6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
         startingPrice: 350000,
         currentPrice: 480000,
         seller: user._id,
@@ -146,7 +150,7 @@ const seedAuctions = async (req, res) => {
       {
         title: 'Banksy "Girl with Balloon" Authentic Print',
         description: 'Signed artist proof, mint condition.',
-        imageUrl: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=800&auto=format&fit=crop',
+        imageUrl: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
         startingPrice: 85000,
         currentPrice: 125000,
         seller: user._id,

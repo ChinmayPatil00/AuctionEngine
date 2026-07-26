@@ -3,7 +3,7 @@ import { AuthContext } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 
 const Profile = () => {
-  const { user, api, loadUser } = useContext(AuthContext);
+  const { user, api, updateBalance } = useContext(AuthContext);
   const [history, setHistory] = useState([]);
   const [endedAuctions, setEndedAuctions] = useState([]);
   const [amount, setAmount] = useState('');
@@ -32,8 +32,8 @@ const Profile = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await api.post('/auth/deposit', { amount: Number(amount) });
-      await loadUser(); // refresh user balance
+      const depositRes = await api.post('/auth/deposit', { amount: Number(amount) });
+      updateBalance(depositRes.data.walletBalance); // refresh user balance
       
       // Refresh transaction history
       const res = await api.get('/auth/history');
