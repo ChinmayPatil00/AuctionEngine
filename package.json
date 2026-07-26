@@ -1,5 +1,5 @@
 {
-  "name": "createrflow-root",
+  "name": "auction-engine",
   "version": "1.0.0",
   "description": "Root package for deploying frontend and backend together",
   "scripts": {
