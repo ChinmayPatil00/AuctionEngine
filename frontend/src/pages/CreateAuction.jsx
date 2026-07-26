@@ -43,17 +43,17 @@ const CreateAuction = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-4 sm:p-8 glass-panel rounded-2xl shadow-xl animate-fade-in-down">
-      <h2 className="text-3xl font-bold mb-6 text-white tracking-wide">List New Item</h2>
+    <div className="max-w-2xl mx-auto p-4 sm:p-8 bg-surface border border-gray-800 shadow-2xl animate-fade-in-down">
+      <h2 className="text-3xl font-black mb-6 text-white tracking-wide serif-heading">List New Asset</h2>
       
-      {error && <div className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-2 rounded-lg mb-6">{error}</div>}
+      {error && <div className="bg-red-500/10 border-l-4 border-red-500 text-red-400 px-4 py-3 mb-6 font-mono text-sm">{error}</div>}
       
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block text-sm font-medium text-gray-400 mb-1">Item Title</label>
+          <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Item Title</label>
           <input 
             type="text" 
-            className="w-full px-4 py-2 bg-background border border-gray-700 rounded-lg focus:outline-none focus:border-accent text-white"
+            className="w-full px-4 py-3 bg-black border border-gray-700 focus:outline-none focus:border-accent text-white transition-colors rounded-sm"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g., Rare Vintage Rolex Daytona"
@@ -62,9 +62,9 @@ const CreateAuction = () => {
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-400 mb-1">Description</label>
+          <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Description</label>
           <textarea 
-            className="w-full px-4 py-2 bg-background border border-gray-700 rounded-lg focus:outline-none focus:border-accent text-white h-24 resize-none"
+            className="w-full px-4 py-3 bg-black border border-gray-700 focus:outline-none focus:border-accent text-white h-32 resize-none transition-colors rounded-sm"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Describe the condition, history, and details..."
@@ -73,23 +73,23 @@ const CreateAuction = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-400 mb-1">Image URL (Optional)</label>
+          <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Image URL (Optional)</label>
           <input 
             type="url" 
-            className="w-full px-4 py-2 bg-background border border-gray-700 rounded-lg focus:outline-none focus:border-accent text-white"
+            className="w-full px-4 py-3 bg-black border border-gray-700 focus:outline-none focus:border-accent text-white transition-colors rounded-sm"
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
             placeholder="https://example.com/image.jpg"
           />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-1">Starting Price ($)</label>
+            <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Starting Price ($)</label>
             <input 
               type="number" 
               min="1"
-              className="w-full px-4 py-2 bg-background border border-gray-700 rounded-lg focus:outline-none focus:border-accent text-white font-mono"
+              className="w-full px-4 py-3 bg-black border border-gray-700 focus:outline-none focus:border-accent text-white font-mono transition-colors rounded-sm"
               value={startingPrice}
               onChange={(e) => setStartingPrice(e.target.value)}
               placeholder="500"
@@ -97,9 +97,9 @@ const CreateAuction = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-1">Start Time</label>
+            <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Start Time</label>
             <select 
-              className="w-full px-4 py-2 bg-background border border-gray-700 rounded-lg focus:outline-none focus:border-accent text-white"
+              className="w-full px-4 py-3 bg-black border border-gray-700 focus:outline-none focus:border-accent text-white transition-colors rounded-sm"
               value={delayMinutes}
               onChange={(e) => setDelayMinutes(e.target.value)}
             >
@@ -110,9 +110,9 @@ const CreateAuction = () => {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-1">Duration</label>
+            <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Duration</label>
             <select 
-              className="w-full px-4 py-2 bg-background border border-gray-700 rounded-lg focus:outline-none focus:border-accent text-white"
+              className="w-full px-4 py-3 bg-black border border-gray-700 focus:outline-none focus:border-accent text-white transition-colors rounded-sm"
               value={durationMinutes}
               onChange={(e) => setDurationMinutes(e.target.value)}
             >
@@ -127,17 +127,17 @@ const CreateAuction = () => {
         <button 
           type="submit" 
           disabled={isSubmitting}
-          className="w-full py-3 bg-accent hover:bg-blue-600 transition-colors rounded-lg font-medium shadow-lg shadow-blue-500/20 text-white mt-8 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="w-full py-4 bg-white hover:bg-gray-200 text-black transition-colors font-bold uppercase tracking-widest text-sm mt-8 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 hover:-translate-y-0.5 duration-300"
         >
           {isSubmitting ? (
             <>
-              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg className="animate-spin h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Starting Auction...
+              Initiating...
             </>
-          ) : 'Start Live Auction'}
+          ) : 'Submit Asset for Listing'}
         </button>
       </form>
     </div>

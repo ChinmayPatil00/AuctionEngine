@@ -130,6 +130,27 @@ const AuctionRoom = () => {
       return;
     }
 
+    // --- ZERO-LATENCY OPTIMISTIC UI UPDATE ---
+    const previousAuctionState = { ...auction };
+    
+    setAuction(prev => ({
+      ...prev,
+      currentPrice: Number(bidAmount),
+      highestBidder: { username: user.username || 'You' },
+      bidHistory: [
+        {
+          _id: 'optimistic_' + Date.now(),
+          amount: Number(bidAmount),
+          createdAt: new Date().toISOString(),
+          user: { username: user.username || 'You' }
+        },
+        ...(prev.bidHistory || [])
+      ]
+    }));
+    
+    setBidAmount(Number(bidAmount) + 1); // Auto-increment the input for the next bid
+    setSuccess('Authorizing...');
+
     // Send bid via WebSocket
     socket.emit('place_bid', {
       auctionId: id,
@@ -151,23 +172,23 @@ const AuctionRoom = () => {
         <p className="text-gray-400 mt-4 text-xl">Reconnecting to live auction feed...</p>
       </div>
     )}
-    <div className={`max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 glass-panel p-4 sm:p-8 rounded-2xl sm:rounded-3xl animate-fade-in-down items-start ${!isConnected ? 'opacity-20 pointer-events-none' : ''}`}>
+    <div className={`max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 bg-surface border border-gray-800 p-4 sm:p-8 animate-fade-in-down items-start shadow-2xl ${!isConnected ? 'opacity-20 pointer-events-none' : ''}`}>
       
       {/* Left: Image & Details */}
       <div className="flex flex-col h-full">
-        <div className="rounded-2xl overflow-hidden mb-6 bg-black h-64 lg:h-[14rem] shadow-[0_0_30px_rgba(0,0,0,0.5)] border border-white/10 relative shrink-0">
+        <div className="overflow-hidden mb-6 bg-black h-64 lg:h-[14rem] shadow-lg border border-gray-800 relative shrink-0">
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10 pointer-events-none"></div>
           <img src={auction.imageUrl} alt={auction.title} className="w-full h-full object-cover" />
         </div>
         <div className="flex-1">
-          <h2 className="text-3xl font-black text-white mb-2 tracking-tight">{auction.title}</h2>
+          <h2 className="text-3xl font-black text-white mb-2 tracking-tight serif-heading">{auction.title}</h2>
           <p className="text-gray-400 mb-4 text-sm leading-relaxed line-clamp-4">{auction.description}</p>
-          <p className="text-xs text-gray-500 uppercase tracking-widest mt-auto">Seller <span className="text-gray-300 font-bold ml-2">{auction.seller?.username}</span></p>
+          <p className="text-xs text-gray-500 uppercase tracking-widest mt-auto">Seller <span className="text-accent font-bold ml-2">{auction.seller?.username}</span></p>
         </div>
       </div>
 
       {/* Middle: Bidding Terminal */}
-      <div className="flex flex-col justify-center bg-black/40 p-4 sm:p-8 rounded-2xl border border-white/5 shadow-inner h-full min-h-[300px]">
+      <div className="flex flex-col justify-center bg-black/40 p-4 sm:p-8 border border-gray-800 shadow-inner h-full min-h-[300px]">
         
         {isEnded ? (
           <div className="text-center py-8">
@@ -203,7 +224,7 @@ const AuctionRoom = () => {
                 <input 
                   type="number" 
                   min={auction.currentPrice + 1}
-                  className="w-full pl-10 pr-4 py-4 bg-black/40 border border-white/10 rounded-xl focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent text-white font-bold text-xl font-mono shadow-inner transition-all"
+                  className="w-full pl-10 pr-4 py-4 bg-black border border-gray-700 focus:outline-none focus:border-accent text-white font-bold text-xl font-mono transition-all rounded-sm"
                   value={bidAmount}
                   onChange={(e) => setBidAmount(e.target.value)}
                   disabled={!user}
@@ -212,7 +233,7 @@ const AuctionRoom = () => {
               <button 
                 type="submit" 
                 disabled={!user}
-                className="w-full py-4 bg-gradient-to-r from-accent to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:from-gray-700 disabled:to-gray-800 disabled:text-gray-500 transition-all rounded-xl font-black shadow-[0_0_15px_rgba(59,130,246,0.3)] text-white uppercase tracking-widest hover:shadow-[0_0_25px_rgba(168,85,247,0.5)] hover:-translate-y-1"
+                className="w-full py-4 bg-white hover:bg-gray-200 text-black disabled:bg-gray-800 disabled:text-gray-500 transition-all font-black shadow-lg uppercase tracking-widest text-sm hover:-translate-y-0.5"
               >
                 {user ? 'Authorize Bid' : 'Login Required'}
               </button>
@@ -222,8 +243,8 @@ const AuctionRoom = () => {
       </div>
 
       {/* Right: Audit Trail (Bid History Feed) */}
-      <div className="flex flex-col bg-black/20 p-4 sm:p-6 rounded-2xl border border-white/5 h-[300px] lg:h-[400px]">
-        <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2 tracking-widest uppercase border-b border-white/10 pb-4 shrink-0">
+      <div className="flex flex-col bg-black/20 p-4 sm:p-6 border border-gray-800 h-[300px] lg:h-[400px]">
+        <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2 tracking-widest uppercase border-b border-gray-800 pb-4 shrink-0">
           <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
           Live Audit Trail
         </h3>
@@ -231,14 +252,14 @@ const AuctionRoom = () => {
         <div className="flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar">
           {auction.bidHistory && auction.bidHistory.length > 0 ? (
             auction.bidHistory.map((bid) => (
-              <div key={bid._id || bid.id} className="bg-black/40 border border-white/5 p-3 rounded-lg flex justify-between items-center transition-all hover:bg-black/60 hover:border-accent/30 animate-fade-in-down">
+              <div key={bid._id || bid.id} className="bg-black border border-gray-800 p-3 flex justify-between items-center transition-all hover:border-accent">
                 <div>
                   <p className="font-bold text-accent tracking-wide text-sm">{bid.user?.username || bid.username}</p>
                   <p className="text-[10px] text-gray-500 font-mono mt-1">
                     {new Date(bid.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'})}
                   </p>
                 </div>
-                <div className="font-mono text-lg font-bold text-glow-green text-green-400">
+                <div className="font-mono text-lg font-bold text-gray-300">
                   ${bid.amount.toLocaleString()}
                 </div>
               </div>
