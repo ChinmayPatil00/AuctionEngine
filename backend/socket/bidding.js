@@ -24,6 +24,11 @@ const processBid = async (auctionId, userId, bidAmount, io) => {
       return { success: false, message: 'Auction or User not found.' };
     }
 
+    if (auction.seller.toString() === user._id.toString()) {
+      await redisClient.del(lockKey);
+      return { success: false, message: 'Sellers cannot bid on their own auctions.' };
+    }
+
     if (auction.status !== 'active' || new Date(auction.endTime) < new Date()) {
       if (auction.status === 'active') {
         auction.status = 'ended';
