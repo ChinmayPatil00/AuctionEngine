@@ -1,21 +1,24 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  name: {
+  username: {
     type: String,
-    trim: true,
+    required: true,
+    unique: true,
   },
   email: {
     type: String,
     required: true,
     unique: true,
-    trim: true,
-    lowercase: true,
   },
   password: {
     type: String,
     required: true,
   },
+  walletBalance: {
+    type: Number,
+    default: 1000000, // Every user starts with $1,000,000 for bidding!
+  }
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

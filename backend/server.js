@@ -1,56 +1,50 @@
-require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
+const http = require('http');
+const { Server } = require('socket.io');
 const mongoose = require('mongoose');
+const cors = require('cors');
+require('dotenv').config();
+const connectDB = require('./config/db');
+const { connectRedis } = require('./config/redis');
+const { setupBiddingSocket } = require('./socket/bidding');
+const startAuctionResolver = require('./workers/auctionResolver');
+const { startBotEngine } = require('./workers/botEngine');
 
-const scriptRoutes = require('./routes/scriptRoutes');
-const aiRoutes = require('./routes/aiRoutes');
-const authRoutes = require('./routes/authRoutes');
-const eventRoutes = require('./routes/eventRoutes');
-const mediaRoutes = require('./routes/mediaRoutes');
-const path = require('path');
+// Connect to Databases
+connectDB();
+connectRedis();
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: '*', // We will restrict this in production
+    methods: ['GET', 'POST'],
+  },
+});
 
 // Middleware
-app.use(cors({
-  origin: true,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'x-gemini-key']
-}));
+app.use(cors());
 app.use(express.json());
 
-// Routes
-app.use('/api/scripts', scriptRoutes);
-app.use('/api/ai', aiRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api/events', eventRoutes);
-app.use('/api/media', mediaRoutes);
+// Basic Route
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok', message: 'Auction Engine Backend Running' });
+});
 
-// Serve static uploads
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// API Routes
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/auctions', require('./routes/auctionRoutes'));
 
-// Serve frontend in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../frontend/dist')));
-  app.get(/(.*)/, (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../frontend/dist/index.html'));
-  });
-}
+// Socket.io Bidding Logic
+setupBiddingSocket(io);
 
-// Database Connection
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/creator_suite_db')
-.then(() => console.log('MongoDB Connected'))
-.catch(err => console.error('MongoDB connection error:', err));
+// Start Background Workers
+startAuctionResolver(io);
+startBotEngine(io);
 
 const PORT = process.env.PORT || 5000;
 
-app.use((err, req, res, next) => {
-  console.error("GLOBAL ERROR HANDLER CAUGHT:", err);
-  res.status(500).json({ message: err.message, stack: err.stack });
-});
-
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

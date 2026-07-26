@@ -9,22 +9,15 @@ const protect = async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     try {
-      // Get token from header
       token = req.headers.authorization.split(' ')[1];
 
-      // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret');
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'supersecret_fallback');
 
-      // Get user from the token
       req.user = await User.findById(decoded.id).select('-password');
-
-      if (!req.user) {
-        return res.status(401).json({ message: 'Not authorized, user no longer exists in database' });
-      }
 
       next();
     } catch (error) {
-      console.error(error);
+      console.warn('Invalid or expired token rejected by middleware.');
       res.status(401).json({ message: 'Not authorized, token failed' });
     }
   }
