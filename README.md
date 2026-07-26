@@ -1,4 +1,4 @@
-# AuctionEngine 🚀
+# Creator Flow 🚀
 
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
@@ -6,7 +6,7 @@
 ![Socket.io](https://img.shields.io/badge/Socket.io-010101?style=for-the-badge&logo=socket.io&logoColor=white)
 ![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
 
-A high-performance, real-time auction marketplace built with the MERN stack and WebSockets. Featuring an **Autonomous AI Bidding Engine** that simulates real-world auction room dynamics, anti-sniper protection, and live wallet deductions.
+Real-time MERN marketplace for creators featuring zero-latency WebSockets, AI automation, and a secure transaction ledger.
 
 ## ✨ Features
 
