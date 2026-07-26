@@ -74,14 +74,14 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="animate-fade-in-down pb-20">
+    <div className="animate-fade-in-down pb-10">
       
       {/* Hero Section */}
-      <div className="relative py-20 mb-16 border-b border-gray-800 flex flex-col items-center justify-center text-center">
-        <h2 className="text-5xl md:text-7xl font-black text-white tracking-tight serif-heading mb-6">
+      <div className="relative py-12 mb-10 border-b border-gray-800 flex flex-col items-center justify-center text-center">
+        <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight serif-heading mb-4">
           The Showroom
         </h2>
-        <p className="text-gray-400 max-w-2xl text-lg mb-10 leading-relaxed">
+        <p className="text-gray-400 max-w-2xl text-base md:text-lg mb-8 leading-relaxed">
           Discover and bid on the world's most exclusive luxury assets, authenticated and secured on our proprietary ledger.
         </p>
         {user && (
@@ -96,12 +96,12 @@ const Dashboard = () => {
           <div className="text-accent font-mono tracking-widest uppercase animate-pulse">Loading Catalog...</div>
         </div>
       ) : (
-        <div className="space-y-24">
+        <div className="space-y-16">
           
           {/* LIVE AUCTIONS */}
           <section>
-            <div className="flex items-center justify-between mb-10 border-b border-gray-800 pb-4">
-              <h3 className="text-3xl font-black tracking-tight text-white serif-heading">Live Marketplace</h3>
+            <div className="flex items-center justify-between mb-8 border-b border-gray-800 pb-3">
+              <h3 className="text-2xl md:text-3xl font-black tracking-tight text-white serif-heading">Live Marketplace</h3>
               <span className="text-xs font-mono text-gray-500 uppercase tracking-widest">{activeAuctions.length} Active</span>
             </div>
             {activeAuctions.length === 0 ? (
@@ -117,8 +117,8 @@ const Dashboard = () => {
 
           {/* UPCOMING AUCTIONS */}
           <section>
-            <div className="flex items-center justify-between mb-10 border-b border-gray-800 pb-4">
-              <h3 className="text-3xl font-black tracking-tight text-white serif-heading">Upcoming Auctions</h3>
+            <div className="flex items-center justify-between mb-8 border-b border-gray-800 pb-3">
+              <h3 className="text-2xl md:text-3xl font-black tracking-tight text-white serif-heading">Upcoming Auctions</h3>
             </div>
             {upcomingAuctions.length === 0 ? (
               <div className="text-center py-24 border border-gray-800">

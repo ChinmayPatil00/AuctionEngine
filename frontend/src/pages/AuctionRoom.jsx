@@ -6,19 +6,19 @@ import { formatDistanceToNow } from 'date-fns';
 
 // --- Sound Effects ---
 const playBidSound = () => {
-  const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/3104/3104-preview.mp3');
+  const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
   audio.volume = 0.4;
   audio.play().catch(e => console.log('Audio play blocked by browser:', e));
 };
 
 const playSniperSound = () => {
-  const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3');
+  const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
   audio.volume = 0.6;
   audio.play().catch(e => console.log('Audio play blocked by browser:', e));
 };
 
 const playErrorSound = () => {
-  const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
+  const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2572/2572-preview.mp3');
   audio.volume = 0.3;
   audio.play().catch(e => console.log('Audio play blocked by browser:', e));
 };

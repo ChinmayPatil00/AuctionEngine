@@ -55,7 +55,7 @@ function App() {
         </header>
       </div>
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-10">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-6">
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/login" element={<Login />} />
@@ -67,9 +67,9 @@ function App() {
       </main>
 
       {/* Developer Footer for Testing */}
-      <footer className="mt-20 border-t border-gray-800 py-10 text-center">
-        <div className="max-w-6xl mx-auto px-4 flex flex-col items-center justify-center gap-4">
-          <p className="text-gray-500 text-sm font-serif">Auction Engine &copy; 2026. All rights reserved.</p>
+      <footer className="mt-10 border-t border-gray-800 py-6 text-center">
+        <div className="max-w-6xl mx-auto px-4 flex flex-col items-center justify-center gap-3">
+          <p className="text-gray-500 text-xs font-serif">Auction Engine &copy; 2026. All rights reserved.</p>
           <button 
             onClick={async () => {
               try {

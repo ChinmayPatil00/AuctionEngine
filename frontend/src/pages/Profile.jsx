@@ -77,7 +77,7 @@ const Profile = () => {
   if (!user) return null;
 
   return (
-    <div className="animate-fade-in-down pb-20 max-w-5xl mx-auto">
+    <div className="animate-fade-in-down pb-10 max-w-5xl mx-auto">
       
       <div className="py-12 mb-10 border-b border-gray-800">
         <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight serif-heading mb-4">
