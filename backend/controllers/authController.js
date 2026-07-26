@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const Transaction = require('../models/Transaction');
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET || 'supersecret_fallback', {
@@ -77,8 +78,48 @@ const getMe = async (req, res) => {
   }
 };
 
+const getUserHistory = async (req, res) => {
+  try {
+    const transactions = await Transaction.find({ user: req.user._id })
+      .populate('auction', 'title imageUrl')
+      .sort({ createdAt: -1 });
+    res.status(200).json(transactions);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const depositFunds = async (req, res) => {
+  try {
+    const { amount } = req.body;
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ message: 'Invalid deposit amount' });
+    }
+
+    const user = await User.findById(req.user._id);
+    user.walletBalance += Number(amount);
+    await user.save();
+
+    const transaction = await Transaction.create({
+      user: user._id,
+      type: 'deposit',
+      amount: Number(amount),
+      description: 'Simulated Wallet Top-up'
+    });
+
+    res.status(200).json({ 
+      walletBalance: user.walletBalance,
+      transaction
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
-  getMe
+  getMe,
+  getUserHistory,
+  depositFunds
 };

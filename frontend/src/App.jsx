@@ -6,6 +6,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import CreateAuction from './pages/CreateAuction';
 import AuctionRoom from './pages/AuctionRoom';
+import Profile from './pages/Profile';
 
 function App() {
   const { user, logout } = useContext(AuthContext);
@@ -32,10 +33,10 @@ function App() {
           <div className="flex gap-2 sm:gap-4 items-center flex-wrap justify-center">
             {user ? (
               <>
-                <div className="px-5 py-2 bg-black/40 rounded-xl font-mono flex items-center gap-3 border border-white/5 shadow-inner">
-                  <span className="text-gray-400 text-xs uppercase tracking-widest">Balance</span>
-                  <span className="text-green-400 font-bold text-lg text-glow-green">${user.walletBalance?.toLocaleString()}</span>
-                </div>
+                <Link to="/profile" className="px-5 py-2 bg-black/40 hover:bg-black/60 transition-colors rounded-xl font-mono flex items-center gap-3 border border-white/5 shadow-inner cursor-pointer group">
+                  <span className="text-gray-400 text-xs uppercase tracking-widest group-hover:text-gray-300 transition-colors">Balance</span>
+                  <span className="text-green-400 font-bold text-lg text-glow-green group-hover:text-green-300 transition-colors">${user.walletBalance?.toLocaleString()}</span>
+                </Link>
                 <button 
                   onClick={handleLogout}
                   className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors rounded-xl font-bold text-sm uppercase tracking-wide border border-red-500/20"
@@ -60,6 +61,7 @@ function App() {
       <main className="max-w-6xl mx-auto pt-8 px-4">
         <Routes>
           <Route path="/" element={<Dashboard />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/create-auction" element={<CreateAuction />} />
           <Route path="/auction/:id" element={<AuctionRoom />} />
           <Route path="/login" element={<Login />} />
