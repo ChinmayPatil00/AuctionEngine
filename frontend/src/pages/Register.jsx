@@ -28,7 +28,7 @@ const Register = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row min-h-[85vh] animate-fade-in-down border border-gray-800 rounded-lg overflow-hidden bg-surface mt-4 shadow-2xl">
+    <div className="flex flex-col md:flex-row min-h-[60vh] md:min-h-[70vh] animate-fade-in-down border border-gray-800 rounded-lg overflow-hidden bg-surface mt-2 md:mt-4 shadow-2xl">
       
       {/* Left Side: Project Showcase / Value Proposition */}
       <div className="w-full md:w-1/2 relative bg-black hidden md:flex flex-col justify-between p-12 overflow-hidden group">
@@ -82,7 +82,7 @@ const Register = () => {
       </div>
 
       {/* Right Side: Authentication Form */}
-      <div className="w-full md:w-1/2 flex items-center justify-center p-8 md:p-12 bg-surface">
+      <div className="w-full md:w-1/2 flex items-center justify-center p-6 md:p-12 bg-surface">
         <div className="w-full max-w-md">
           <h2 className="text-3xl font-black mb-2 text-white tracking-wide serif-heading">Become a Member</h2>
           <p className="text-gray-400 mb-8 font-mono text-sm">Register to participate in exclusive auctions.</p>

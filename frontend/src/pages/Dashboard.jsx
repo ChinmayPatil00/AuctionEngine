@@ -74,10 +74,10 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="animate-fade-in-down pb-10">
+    <div className="animate-fade-in-down pb-4">
       
       {/* Hero Section */}
-      <div className="relative py-24 mb-16 border-b border-gray-800 flex flex-col items-center justify-center text-center bg-black">
+      <div className="relative py-12 md:py-16 mb-8 md:mb-12 border-b border-gray-800 flex flex-col items-center justify-center text-center bg-black">
         <div className="relative z-10 flex flex-col items-center justify-center w-full px-4 max-w-4xl mx-auto">
           <p className="text-accent uppercase tracking-[0.3em] text-xs font-bold mb-6">Welcome to</p>
           <h2 className="text-5xl md:text-7xl font-black text-white tracking-tight serif-heading mb-8">
@@ -100,7 +100,7 @@ const Dashboard = () => {
           <div className="text-accent font-mono tracking-widest uppercase animate-pulse">Loading Catalog...</div>
         </div>
       ) : (
-        <div className="space-y-16">
+        <div className="space-y-10 md:space-y-12">
           
           {/* LIVE AUCTIONS */}
           <section>
