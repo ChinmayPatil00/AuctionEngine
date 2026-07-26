@@ -52,8 +52,12 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const updateBalance = (newBalance) => {
+    setUser(prev => prev ? { ...prev, walletBalance: newBalance } : prev);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading, api }}>
+    <AuthContext.Provider value={{ user, login, register, logout, loading, api, updateBalance }}>
       {!loading && children}
     </AuthContext.Provider>
   );

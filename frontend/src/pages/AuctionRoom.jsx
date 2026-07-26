@@ -25,7 +25,7 @@ const playErrorSound = () => {
 
 const AuctionRoom = () => {
   const { id } = useParams();
-  const { api, user, login } = useContext(AuthContext); // In a real app we'd just update user state directly, but login() works to refresh token if needed, wait we can just update wallet
+  const { api, user, updateBalance } = useContext(AuthContext); 
   
   const [auction, setAuction] = useState(null);
   const [socket, setSocket] = useState(null);
@@ -85,7 +85,9 @@ const AuctionRoom = () => {
     });
 
     newSocket.on('wallet_update', (data) => {
-      // Wallet updated
+      if (updateBalance) {
+        updateBalance(data.newBalance);
+      }
     });
 
     newSocket.on('auction_ended', (data) => {
