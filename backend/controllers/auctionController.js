@@ -16,7 +16,7 @@ const createAuction = async (req, res) => {
     const auction = await AuctionItem.create({
       title,
       description,
-      imageUrl: imageUrl || 'https://via.placeholder.com/400x300?text=No+Image',
+      imageUrl: imageUrl || 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=800&auto=format&fit=crop',
       startingPrice,
       currentPrice: startingPrice,
       seller: req.user._id,

@@ -11,7 +11,7 @@ const auctionItemSchema = new mongoose.Schema({
   },
   imageUrl: {
     type: String,
-    default: 'https://via.placeholder.com/400x300?text=No+Image',
+    default: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=800&auto=format&fit=crop',
   },
   startingPrice: {
     type: Number,

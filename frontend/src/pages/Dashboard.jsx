@@ -43,7 +43,7 @@ const Dashboard = () => {
           <div className="absolute bottom-4 left-4 z-20 flex gap-2">
             {isLive && <span className="px-3 py-1 bg-green-500/20 border border-green-500/50 text-green-400 text-xs font-bold rounded-full uppercase backdrop-blur-md animate-pulse">Live</span>}
             {isUpcoming && <span className="px-3 py-1 bg-yellow-500/20 border border-yellow-500/50 text-yellow-400 text-xs font-bold rounded-full uppercase backdrop-blur-md">Upcoming</span>}
-            {isEnded && <span className="px-3 py-1 bg-gray-500/20 border border-gray-500/50 text-gray-400 text-xs font-bold rounded-full uppercase backdrop-blur-md">Ended</span>}
+            {isEnded && <span className="px-3 py-1 bg-pink-500/20 border border-pink-500/50 text-pink-400 text-xs font-bold rounded-full uppercase backdrop-blur-md">Ended</span>}
           </div>
         </div>
         
@@ -130,7 +130,7 @@ const Dashboard = () => {
           <section>
             <div className="flex items-center gap-4 mb-8">
               <div className="w-4 h-4 rounded-full bg-yellow-500 shadow-[0_0_15px_rgba(234,179,8,0.6)]"></div>
-              <h3 className="text-3xl font-black tracking-tight text-white">Upcoming Options</h3>
+              <h3 className="text-3xl font-black tracking-tight text-white">Upcoming Auctions</h3>
             </div>
             {upcomingAuctions.length === 0 ? (
               <div className="text-center py-16 glass-panel rounded-3xl border-dashed border-white/10">
@@ -146,8 +146,8 @@ const Dashboard = () => {
           {/* ENDED AUCTIONS */}
           <section>
             <div className="flex items-center gap-4 mb-8 border-t border-white/10 pt-16">
-              <div className="w-4 h-4 rounded-full bg-gray-500"></div>
-              <h3 className="text-3xl font-black tracking-tight text-gray-400">Auction History</h3>
+              <div className="w-4 h-4 rounded-full bg-pink-500 shadow-[0_0_15px_rgba(236,72,153,0.6)]"></div>
+              <h3 className="text-3xl font-black tracking-tight text-pink-400">Auction History</h3>
             </div>
             {endedAuctions.length === 0 ? (
               <div className="text-center py-16 glass-panel rounded-3xl border-dashed border-white/10">
