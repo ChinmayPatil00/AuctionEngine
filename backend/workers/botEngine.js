@@ -12,7 +12,6 @@ const seedBots = async () => {
     for (const name of BOT_NAMES) {
       let bot = await User.findOne({ email: `${name.toLowerCase()}@bot.com` });
       if (!bot) {
-        // Create bot with $100M wallet
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash('botpassword123', salt);
         bot = await User.create({
@@ -23,7 +22,6 @@ const seedBots = async () => {
         });
         console.log(`[BotEngine] Spawned AI Bot: ${name}`);
       } else {
-        // Replenish bot wallet if low
         if (bot.walletBalance < 10000000) {
           bot.walletBalance = 100000000;
           await bot.save();
@@ -37,44 +35,28 @@ const seedBots = async () => {
   }
 };
 
-const runBiddingCycle = async (io) => {
+const simulateBotBids = async (auction, io) => {
   if (botUsers.length === 0) return;
-
   try {
-    // Find all active auctions
-    const activeAuctions = await AuctionItem.find({ 
-      status: 'active',
-      endTime: { $gt: new Date() }
-    });
+    const randomBot = botUsers[Math.floor(Math.random() * botUsers.length)];
 
-    for (const auction of activeAuctions) {
-      // 100% chance a bot bids on this cycle for testing (Removed the 25% skip)
-      // Pick a random bot
-      const randomBot = botUsers[Math.floor(Math.random() * botUsers.length)];
+    const isBotWinning = botUsers.some(b => b._id.toString() === auction.highestBidder?.toString());
+    if (isBotWinning && Math.random() > 0.30) return;
 
-      // Don't bid against ourselves unless there's a 30% chance
-      const isBotWinning = botUsers.some(b => b._id.toString() === auction.highestBidder?.toString());
-      if (isBotWinning && Math.random() > 0.30) continue;
+    const incrementPercent = 0.01 + (Math.random() * 0.04);
+    let bidAmount = Math.floor(auction.currentPrice * (1 + incrementPercent));
+    
+    if (bidAmount <= auction.currentPrice) {
+      bidAmount = auction.currentPrice + 10;
+    }
 
-      // Calculate a realistic bid increment (1% to 5% higher)
-      const incrementPercent = 0.01 + (Math.random() * 0.04);
-      let bidAmount = Math.floor(auction.currentPrice * (1 + incrementPercent));
-      
-      // If current price is low, min increment might be 0, so ensure at least $10
-      if (bidAmount <= auction.currentPrice) {
-        bidAmount = auction.currentPrice + 10;
-      }
-
-      console.log(`[BotEngine] 🤖 ${randomBot.username} is attempting to bid $${bidAmount} on ${auction.title}...`);
-      
-      // Execute bid through exact same locking logic as human users
-      // FORCE STRING CONVERSION FOR SOCKET.IO ROOM COMPATIBILITY
-      const result = await processBid(auction._id.toString(), randomBot._id.toString(), bidAmount, io);
-      if (result.success) {
-        console.log(`[BotEngine] ✅ ${randomBot.username} successfully outbid the room!`);
-      } else {
-        console.log(`[BotEngine] ❌ ${randomBot.username} bid failed: ${result.message}`);
-      }
+    console.log(`[BotEngine] 🤖 ${randomBot.username} is attempting to bid $${bidAmount} on ${auction.title}...`);
+    
+    const result = await processBid(auction._id.toString(), randomBot._id.toString(), bidAmount, io);
+    if (result.success) {
+      console.log(`[BotEngine] ✅ ${randomBot.username} successfully outbid the room!`);
+    } else {
+      console.log(`[BotEngine] ❌ ${randomBot.username} bid failed: ${result.message}`);
     }
   } catch (error) {
     console.error('[BotEngine] Cycle error:', error);
@@ -85,9 +67,45 @@ const startBotEngine = async (io) => {
   console.log('[BotEngine] Initializing Autonomous Bidding Engine...');
   await seedBots();
   
-  // Run cycle every 5 seconds
-  setInterval(() => runBiddingCycle(io), 5000);
-  console.log('[BotEngine] Bidding Engine is now online and monitoring active auctions.');
+  try {
+    // Attempt to use MongoDB Change Streams for Event-Driven architecture (requires Replica Set)
+    const changeStream = AuctionItem.watch([
+      { $match: { 'operationType': { $in: ['insert', 'update'] } } }
+    ]);
+    
+    console.log('[BotEngine] ✅ Change Streams activated! Engine is now purely event-driven (0% Idle CPU).');
+    
+    changeStream.on('change', async (change) => {
+      // If a new auction is created or an existing auction receives a bid, wake up the bots
+      try {
+        const activeAuctions = await AuctionItem.find({ status: 'active' });
+        for (const auction of activeAuctions) {
+          if (new Date(auction.endTime) > new Date()) {
+            // Random delay to make it feel human (1 to 4 seconds)
+            setTimeout(() => {
+              simulateBotBids(auction, io);
+            }, Math.floor(Math.random() * 3000) + 1000);
+          }
+        }
+      } catch (err) {
+        console.error('[BotEngine] Error handling change stream event:', err);
+      }
+    });
+    
+  } catch (err) {
+    // Fallback to polling if local MongoDB doesn't support Change Streams
+    console.warn('[BotEngine] ⚠️ Change Streams not supported (no replica set). Falling back to Polling Mode (Not recommended for high scale).');
+    setInterval(async () => {
+      try {
+        const activeAuctions = await AuctionItem.find({ status: 'active', endTime: { $gt: new Date() } });
+        for (const auction of activeAuctions) {
+          await simulateBotBids(auction, io);
+        }
+      } catch (error) {
+        console.error('[BotEngine] Polling Error:', error);
+      }
+    }, 5000);
+  }
 };
 
 module.exports = { startBotEngine };

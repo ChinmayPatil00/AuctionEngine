@@ -32,6 +32,7 @@ const AuctionRoom = () => {
   const [bidAmount, setBidAmount] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [isConnected, setIsConnected] = useState(true);
 
   // 1. Fetch initial auction data
   useEffect(() => {
@@ -50,11 +51,21 @@ const AuctionRoom = () => {
   // 2. Setup Socket.io
   useEffect(() => {
     const socketUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
-    const newSocket = io(socketUrl);
+    // Pass JWT token for secure backend authentication
+    const newSocket = io(socketUrl, {
+      auth: {
+        token: user?.token || localStorage.getItem('token')
+      }
+    });
     setSocket(newSocket);
 
     newSocket.on('connect', () => {
+      setIsConnected(true);
       newSocket.emit('join_auction', id);
+    });
+
+    newSocket.on('disconnect', () => {
+      setIsConnected(false);
     });
 
     newSocket.on('bid_update', (data) => {
@@ -128,7 +139,14 @@ const AuctionRoom = () => {
 
   return (
     <>
-    <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 glass-panel p-4 sm:p-8 rounded-2xl sm:rounded-3xl animate-fade-in-down items-start">
+    {!isConnected && (
+      <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl flex flex-col items-center justify-center pointer-events-auto">
+        <div className="w-24 h-24 border-4 border-red-500 border-t-transparent rounded-full animate-spin mb-8"></div>
+        <h2 className="text-4xl font-black text-red-500 tracking-widest animate-pulse">CONNECTION LOST</h2>
+        <p className="text-gray-400 mt-4 text-xl">Reconnecting to live auction feed...</p>
+      </div>
+    )}
+    <div className={`max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 glass-panel p-4 sm:p-8 rounded-2xl sm:rounded-3xl animate-fade-in-down items-start ${!isConnected ? 'opacity-20 pointer-events-none' : ''}`}>
       
       {/* Left: Image & Details */}
       <div className="flex flex-col h-full">

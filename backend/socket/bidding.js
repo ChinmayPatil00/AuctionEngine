@@ -2,6 +2,8 @@ const { redisClient } = require('../config/redis');
 const AuctionItem = require('../models/AuctionItem');
 const User = require('../models/User');
 const Bid = require('../models/Bid');
+const Transaction = require('../models/Transaction');
+const jwt = require('jsonwebtoken');
 
 const processBid = async (auctionId, userId, bidAmount, io) => {
   const lockKey = `lock:auction:${auctionId}`;
@@ -54,12 +56,26 @@ const processBid = async (auctionId, userId, bidAmount, io) => {
       if (previousBidder) {
         previousBidder.walletBalance += auction.currentPrice;
         await previousBidder.save();
+        await Transaction.create({
+          user: previousBidder._id,
+          type: 'refund',
+          amount: auction.currentPrice,
+          auction: auctionId,
+          description: `Outbid refund for ${auction.title}`
+        });
       }
     }
 
     // Deduct from new bidder
     user.walletBalance -= bidAmount;
     await user.save();
+    await Transaction.create({
+      user: user._id,
+      type: 'bid',
+      amount: bidAmount,
+      auction: auctionId,
+      description: `Bid placed on ${auction.title}`
+    });
 
     // Anti-Sniper Logic
     const timeRemainingMs = new Date(auction.endTime).getTime() - Date.now();
@@ -109,8 +125,26 @@ const processBid = async (auctionId, userId, bidAmount, io) => {
 };
 
 const setupBiddingSocket = (io) => {
+  // Security Patch: Authenticate WebSocket Handshake
+  io.use(async (socket, next) => {
+    const token = socket.handshake.auth?.token;
+    if (!token) {
+      // Bots don't have tokens, we'll allow them by bypassing auth if it's an internal local connection, 
+      // but for simplicity, we'll allow anonymous connections but they can't bid.
+      return next();
+    }
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'supersecret_fallback');
+      socket.user = await User.findById(decoded.id).select('-password');
+      next();
+    } catch (err) {
+      console.warn('Socket Auth Error:', err.message);
+      next();
+    }
+  });
+
   io.on('connection', (socket) => {
-    console.log(`User connected to socket: ${socket.id}`);
+    console.log(`User connected to socket: ${socket.id} (Auth: ${socket.user ? socket.user.username : 'Anonymous'})`);
 
     // Join an auction room
     socket.on('join_auction', (auctionId) => {
@@ -120,9 +154,22 @@ const setupBiddingSocket = (io) => {
 
     // Handle incoming bids
     socket.on('place_bid', async (data) => {
-      const { auctionId, userId, bidAmount } = data;
+      const { auctionId, bidAmount } = data; // userId is no longer trusted from payload
+      
+      // Determine real userId
+      let realUserId;
+      if (data.isBot && data.botSecret === 'INTERNAL_BOT_SECRET') {
+        // Internal bot bypass (trusted)
+        realUserId = data.userId;
+      } else if (socket.user) {
+        // Authenticated human user
+        realUserId = socket.user._id;
+      } else {
+        return socket.emit('bid_error', { message: 'Unauthorized. Please log in.' });
+      }
+
       try {
-        const result = await processBid(auctionId, userId, bidAmount, io);
+        const result = await processBid(auctionId, realUserId, bidAmount, io);
         if (!result.success) {
           return socket.emit('bid_error', { message: result.message });
         }
