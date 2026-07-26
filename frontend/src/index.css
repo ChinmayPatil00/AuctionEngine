@@ -1,14 +1,13 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #0a0a0f;
-  --color-surface: #14141f;
-  --color-accent: #3b82f6;
-  --color-accent-glow: #60a5fa;
-  --color-neon-purple: #a855f7;
-  --color-neon-blue: #0ea5e9;
+  --color-primary: #050505;
+  --color-surface: #111111;
+  --color-accent: #c6a87c; /* Luxury Gold */
+  --color-accent-hover: #e0c59a;
   
   --font-sans: 'Inter', system-ui, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
   --font-mono: 'Fira Code', 'Courier New', monospace;
 }
 
@@ -16,61 +15,51 @@ body {
   margin: 0;
   font-family: var(--font-sans);
   background-color: var(--color-primary);
-  color: #e2e8f0;
-  /* Deep space radial gradient with subtle neon hues */
-  background-image: 
-    radial-gradient(circle at 15% 50%, rgba(14, 165, 233, 0.1), transparent 25%),
-    radial-gradient(circle at 85% 30%, rgba(168, 85, 247, 0.15), transparent 25%);
-  background-attachment: fixed;
+  color: #f1f1f1;
+  /* Minimalist dark background, no neon gradients */
+  background-image: none;
   min-height: 100vh;
+}
+
+h1, h2, h3, h4, .serif-heading {
+  font-family: var(--font-serif);
 }
 
 /* Custom Sleek Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(10, 10, 15, 0.5);
+  background: var(--color-primary);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(59, 130, 246, 0.3);
-  border-radius: 10px;
+  background: #333;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(59, 130, 246, 0.6);
+  background: var(--color-accent);
 }
 
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;
 }
 
-/* Glassmorphism Utilities */
+/* Minimalist Panels (replaces glass-panel) */
 .glass-panel {
-  background: rgba(20, 20, 31, 0.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  background: var(--color-surface);
+  border: 1px solid #222;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
 }
 
 .glass-card {
-  background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--color-surface);
+  border: 1px solid #222;
+  transition: all 0.3s ease;
+  border-radius: 4px;
 }
 .glass-card:hover {
-  border-color: rgba(14, 165, 233, 0.3);
-  box-shadow: 0 0 20px rgba(14, 165, 233, 0.1);
-  transform: translateY(-4px);
-}
-
-/* Neon Text Utilities */
-.text-glow-blue {
-  text-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
-}
-.text-glow-green {
-  text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+  border-color: var(--color-accent);
+  transform: translateY(-2px);
 }
 
 /* Animations */

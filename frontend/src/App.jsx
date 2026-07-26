@@ -21,21 +21,18 @@ function App() {
     <div className="min-h-screen text-white overflow-x-hidden">
       {/* Floating Glass Navbar */}
       <div className="sticky top-0 z-50 p-4">
-        <header className="glass-panel max-w-6xl mx-auto rounded-2xl px-4 sm:px-6 py-4 flex flex-col sm:flex-row gap-4 sm:gap-0 justify-between items-center transition-all">
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-full bg-accent/20 border border-accent flex items-center justify-center group-hover:bg-accent/40 transition-colors">
-              <span className="text-accent font-bold">Æ</span>
-            </div>
-            <h1 className="text-2xl font-bold tracking-wider uppercase bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
+        <header className="glass-panel max-w-6xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row gap-4 sm:gap-0 justify-between items-center transition-all border-b-2 border-accent">
+          <Link to="/" className="flex items-center gap-3 group">
+            <h1 className="text-2xl font-black tracking-widest uppercase text-white serif-heading group-hover:text-accent transition-colors">
               Auction Engine
             </h1>
           </Link>
           <div className="flex gap-2 sm:gap-4 items-center flex-wrap justify-center">
             {user ? (
               <>
-                <Link to="/profile" className="px-5 py-2 bg-black/40 hover:bg-black/60 transition-colors rounded-xl font-mono flex items-center gap-3 border border-white/5 shadow-inner cursor-pointer group">
-                  <span className="text-gray-400 text-xs uppercase tracking-widest group-hover:text-gray-300 transition-colors">Balance</span>
-                  <span className="text-green-400 font-bold text-lg text-glow-green group-hover:text-green-300 transition-colors">${user.walletBalance?.toLocaleString()}</span>
+                <Link to="/profile" className="px-5 py-2 bg-black/40 hover:bg-black/60 transition-colors rounded-sm font-mono flex items-center gap-3 border border-gray-800 cursor-pointer group">
+                  <span className="text-gray-400 text-xs uppercase tracking-widest group-hover:text-white transition-colors">The Vault</span>
+                  <span className="text-accent font-bold text-lg">${user.walletBalance?.toLocaleString()}</span>
                 </Link>
                 <button 
                   onClick={handleLogout}
@@ -49,7 +46,7 @@ function App() {
                 <Link to="/login" className="px-6 py-2 hover:text-accent transition-colors font-bold text-sm uppercase tracking-wide">
                   Login
                 </Link>
-                <Link to="/register" className="px-6 py-2 bg-accent hover:bg-blue-600 transition-all rounded-xl font-bold text-sm uppercase tracking-wide shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                <Link to="/register" className="px-6 py-2 bg-accent hover:bg-accent-hover text-black transition-all rounded-sm font-bold text-sm uppercase tracking-widest">
                   Register
                 </Link>
               </>

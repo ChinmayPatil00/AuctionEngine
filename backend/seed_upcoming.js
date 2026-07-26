@@ -5,7 +5,7 @@ const User = require('./models/User');
 
 dotenv.config();
 
-const seedUpcoming = async () => {
+const seedEnded = async () => {
   try {
     const mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/auction_engine';
     await mongoose.connect(mongoUri);
@@ -17,31 +17,35 @@ const seedUpcoming = async () => {
       process.exit(1);
     }
 
-    const upcomingAuctions = [
+    const endedAuctions = [
       {
-        title: '2024 Porsche 911 GT3 RS',
-        description: 'Pristine condition, heavily optioned 911 GT3 RS in Shark Blue.',
-        imageUrl: 'https://images.unsplash.com/photo-1503376712351-1c4360cb6e22?q=80&w=800&auto=format&fit=crop',
-        startingPrice: 285000,
-        currentPrice: 285000,
+        title: 'Original Apple-1 Computer',
+        description: 'Fully functional, authenticated Apple-1 motherboard from 1976.',
+        imageUrl: 'https://images.unsplash.com/photo-1517077304055-6e89abf0ceb6?q=80&w=800&auto=format&fit=crop',
+        startingPrice: 350000,
+        currentPrice: 480000,
         seller: user._id,
-        startTime: new Date(Date.now() + 2 * 60 * 60000), // starts in 2 hours
-        endTime: new Date(Date.now() + 26 * 60 * 60000),
+        highestBidder: user._id,
+        startTime: new Date(Date.now() - 48 * 60 * 60000), 
+        endTime: new Date(Date.now() - 24 * 60 * 60000), // ended 24 hours ago
+        status: 'ended'
       },
       {
-        title: 'Rare 1st Edition Charizard PSA 10',
-        description: 'Gem Mint PSA 10 First Edition Base Set Charizard.',
-        imageUrl: 'https://images.unsplash.com/photo-1613771404721-1f92d799e49f?q=80&w=800&auto=format&fit=crop',
-        startingPrice: 150000,
-        currentPrice: 150000,
+        title: 'Banksy "Girl with Balloon" Authentic Print',
+        description: 'Signed artist proof, mint condition.',
+        imageUrl: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=800&auto=format&fit=crop',
+        startingPrice: 85000,
+        currentPrice: 125000,
         seller: user._id,
-        startTime: new Date(Date.now() + 24 * 60 * 60000), // starts in 24 hours
-        endTime: new Date(Date.now() + 48 * 60 * 60000),
+        highestBidder: user._id,
+        startTime: new Date(Date.now() - 72 * 60 * 60000), 
+        endTime: new Date(Date.now() - 48 * 60 * 60000), // ended 48 hours ago
+        status: 'ended'
       }
     ];
 
-    await AuctionItem.insertMany(upcomingAuctions);
-    console.log('Successfully seeded upcoming auctions!');
+    await AuctionItem.insertMany(endedAuctions);
+    console.log('Successfully seeded ended auctions!');
     process.exit();
   } catch (error) {
     console.error('Error seeding data:', error);
@@ -49,4 +53,4 @@ const seedUpcoming = async () => {
   }
 };
 
-seedUpcoming();
+seedEnded();
