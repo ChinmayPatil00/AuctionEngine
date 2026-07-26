@@ -14,7 +14,7 @@ const Profile = () => {
     const fetchVaultData = async () => {
       try {
         const [historyRes, endedRes] = await Promise.all([
-          api.get('/auth/history'),
+          api.get('/auth/history', { headers: { Authorization: `Bearer ${user?.token}` } }),
           api.get('/auctions/ended')
         ]);
         setHistory(historyRes.data);
@@ -32,11 +32,14 @@ const Profile = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const depositRes = await api.post('/auth/deposit', { amount: Number(amount) });
+      const depositRes = await api.post('/auth/deposit', 
+        { amount: Number(amount) },
+        { headers: { Authorization: `Bearer ${user?.token}` } }
+      );
       updateBalance(depositRes.data.walletBalance); // refresh user balance
       
       // Refresh transaction history
-      const res = await api.get('/auth/history');
+      const res = await api.get('/auth/history', { headers: { Authorization: `Bearer ${user?.token}` } });
       setHistory(res.data);
       
       setAmount('');

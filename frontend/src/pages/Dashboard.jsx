@@ -77,20 +77,18 @@ const Dashboard = () => {
     <div className="animate-fade-in-down pb-10">
       
       {/* Hero Section */}
-      <div className="relative py-20 mb-10 border-b border-gray-800 flex flex-col items-center justify-center text-center overflow-hidden">
-        {/* Premium Background Glow */}
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-800/30 via-black/80 to-black pointer-events-none z-0"></div>
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-accent/10 blur-[100px] rounded-full pointer-events-none z-0"></div>
-
-        <div className="relative z-10 flex flex-col items-center justify-center w-full px-4">
-          <h2 className="text-5xl md:text-6xl font-black text-white tracking-tight serif-heading mb-6 drop-shadow-2xl">
+      <div className="relative py-24 mb-16 border-b border-gray-800 flex flex-col items-center justify-center text-center bg-black">
+        <div className="relative z-10 flex flex-col items-center justify-center w-full px-4 max-w-4xl mx-auto">
+          <p className="text-accent uppercase tracking-[0.3em] text-xs font-bold mb-6">Welcome to</p>
+          <h2 className="text-5xl md:text-7xl font-black text-white tracking-tight serif-heading mb-8">
             The Showroom
           </h2>
-          <p className="text-gray-400 max-w-2xl text-base md:text-lg mb-10 leading-relaxed font-light">
-            Discover and bid on the world's most exclusive luxury assets, authenticated and secured on our proprietary ledger.
+          <div className="w-24 h-px bg-gray-800 mb-8"></div>
+          <p className="text-gray-400 text-base md:text-lg mb-12 leading-relaxed font-light max-w-2xl">
+            Discover and bid on the world's most exclusive luxury assets, authenticated and secured on our proprietary immutable ledger.
           </p>
           {user && (
-            <Link to="/create-auction" className="px-8 py-4 bg-white hover:bg-gray-200 text-black transition-all font-bold uppercase tracking-widest text-sm shadow-xl hover:-translate-y-1 hover:shadow-2xl duration-300">
+            <Link to="/create-auction" className="px-10 py-4 border border-gray-700 hover:border-white text-white transition-all font-bold uppercase tracking-[0.2em] text-xs bg-transparent hover:bg-white hover:text-black duration-500">
               List an Asset
             </Link>
           )}

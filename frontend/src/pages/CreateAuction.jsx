@@ -53,7 +53,7 @@ const CreateAuction = () => {
           <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Item Title</label>
           <input 
             type="text" 
-            className="w-full px-4 py-3 bg-black border border-gray-700 focus:outline-none focus:border-accent text-white transition-colors rounded-sm"
+            className="w-full px-4 py-3 bg-black border border-gray-700 focus:outline-none focus:border-white text-white transition-colors rounded-sm"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g., Rare Vintage Rolex Daytona"
@@ -64,7 +64,7 @@ const CreateAuction = () => {
         <div>
           <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Description</label>
           <textarea 
-            className="w-full px-4 py-3 bg-black border border-gray-700 focus:outline-none focus:border-accent text-white h-32 resize-none transition-colors rounded-sm"
+            className="w-full px-4 py-3 bg-black border border-gray-700 focus:outline-none focus:border-white text-white h-32 resize-none transition-colors rounded-sm"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Describe the condition, history, and details..."
@@ -76,7 +76,7 @@ const CreateAuction = () => {
           <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Image URL (Optional)</label>
           <input 
             type="url" 
-            className="w-full px-4 py-3 bg-black border border-gray-700 focus:outline-none focus:border-accent text-white transition-colors rounded-sm"
+            className="w-full px-4 py-3 bg-black border border-gray-700 focus:outline-none focus:border-white text-white transition-colors rounded-sm"
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
             placeholder="https://example.com/image.jpg"
@@ -89,7 +89,7 @@ const CreateAuction = () => {
             <input 
               type="number" 
               min="1"
-              className="w-full px-4 py-3 bg-black border border-gray-700 focus:outline-none focus:border-accent text-white font-mono transition-colors rounded-sm"
+              className="w-full px-4 py-3 bg-black border border-gray-700 focus:outline-none focus:border-white text-white font-mono transition-colors rounded-sm"
               value={startingPrice}
               onChange={(e) => setStartingPrice(e.target.value)}
               placeholder="500"
@@ -99,7 +99,7 @@ const CreateAuction = () => {
           <div>
             <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Start Time</label>
             <select 
-              className="w-full px-4 py-3 bg-black border border-gray-700 focus:outline-none focus:border-accent text-white transition-colors rounded-sm"
+              className="w-full px-4 py-3 bg-black border border-gray-700 focus:outline-none focus:border-white text-white transition-colors rounded-sm"
               value={delayMinutes}
               onChange={(e) => setDelayMinutes(e.target.value)}
             >
@@ -112,7 +112,7 @@ const CreateAuction = () => {
           <div>
             <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Duration</label>
             <select 
-              className="w-full px-4 py-3 bg-black border border-gray-700 focus:outline-none focus:border-accent text-white transition-colors rounded-sm"
+              className="w-full px-4 py-3 bg-black border border-gray-700 focus:outline-none focus:border-white text-white transition-colors rounded-sm"
               value={durationMinutes}
               onChange={(e) => setDurationMinutes(e.target.value)}
             >
