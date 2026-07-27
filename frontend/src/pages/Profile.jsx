@@ -77,6 +77,28 @@ const Profile = () => {
     </div>
   );
 
+  const SkeletonHistoryCard = () => (
+    <div className="flex flex-col md:flex-row gap-6 p-6 border border-gray-800 bg-surface/30 animate-pulse">
+      <div className="w-full md:w-48 h-32 bg-gray-900 shrink-0"></div>
+      <div className="flex-grow flex flex-col justify-center">
+        <div className="h-6 bg-gray-800 rounded w-1/2 mb-4"></div>
+        <div className="flex items-center gap-6 mt-2">
+          <div>
+            <div className="h-3 bg-gray-800 rounded w-20 mb-2"></div>
+            <div className="h-5 bg-gray-800 rounded w-16"></div>
+          </div>
+          <div>
+            <div className="h-3 bg-gray-800 rounded w-16 mb-2"></div>
+            <div className="h-5 bg-gray-800 rounded w-24"></div>
+          </div>
+        </div>
+      </div>
+      <div className="flex items-center justify-end md:w-32">
+        <div className="h-4 bg-gray-800 rounded w-20"></div>
+      </div>
+    </div>
+  );
+
   if (!user) return null;
 
   return (
@@ -147,8 +169,10 @@ const Profile = () => {
           <h3 className="text-2xl font-bold text-white mb-8 serif-heading border-b border-gray-800 pb-4">Global Auction History</h3>
           
           {loadingData ? (
-            <div className="text-center py-12">
-              <span className="text-gray-500 font-mono uppercase tracking-widest animate-pulse">Loading Archives...</span>
+            <div className="space-y-4">
+              <SkeletonHistoryCard />
+              <SkeletonHistoryCard />
+              <SkeletonHistoryCard />
             </div>
           ) : endedAuctions.length === 0 ? (
             <div className="text-center py-20 border border-gray-800">

@@ -1,12 +1,13 @@
-import React, { useContext } from 'react';
+import React, { useContext, lazy, Suspense } from 'react';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from './context/AuthContext';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import CreateAuction from './pages/CreateAuction';
-import AuctionRoom from './pages/AuctionRoom';
-import Profile from './pages/Profile';
+
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const CreateAuction = lazy(() => import('./pages/CreateAuction'));
+const AuctionRoom = lazy(() => import('./pages/AuctionRoom'));
+const Profile = lazy(() => import('./pages/Profile'));
 
 function App() {
   const { user, logout } = useContext(AuthContext);
@@ -56,14 +57,23 @@ function App() {
       </div>
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-4 pb-4">
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/create-auction" element={<CreateAuction />} />
-          <Route path="/auction/:id" element={<AuctionRoom />} />
-          <Route path="/profile" element={<Profile />} />
-        </Routes>
+        <Suspense fallback={
+          <div className="flex justify-center items-center h-screen">
+            <div className="animate-pulse flex flex-col items-center gap-4">
+              <div className="w-12 h-12 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+              <p className="text-accent tracking-[0.3em] uppercase text-xs font-bold">Authenticating Connection...</p>
+            </div>
+          </div>
+        }>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/create-auction" element={<CreateAuction />} />
+            <Route path="/auction/:id" element={<AuctionRoom />} />
+            <Route path="/profile" element={<Profile />} />
+          </Routes>
+        </Suspense>
       </main>
 
       {/* Developer Footer for Testing */}
