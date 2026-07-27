@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const { redisClient } = require('../config/redis');
 const AuctionItem = require('../models/AuctionItem');
 const User = require('../models/User');
@@ -7,9 +8,10 @@ const jwt = require('jsonwebtoken');
 
 const processBid = async (auctionId, userId, bidAmount, io) => {
   const lockKey = `lock:auction:${auctionId}`;
+  const lockValue = Math.random().toString(36).substring(2) + Date.now().toString(36);
 
   try {
-    const acquiredLock = await redisClient.set(lockKey, 'locked', {
+    const acquiredLock = await redisClient.set(lockKey, lockValue, {
       NX: true,
       PX: 5000 
     });
@@ -18,90 +20,105 @@ const processBid = async (auctionId, userId, bidAmount, io) => {
       return { success: false, message: 'High traffic! Please try bidding again.' };
     }
 
-    const auction = await AuctionItem.findById(auctionId);
-    const user = await User.findById(userId);
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
-    if (!auction || !user) {
-      console.error(`[DEBUG] Auction or User not found! auctionId=${auctionId}, userId=${userId}`);
-      console.error(`[DEBUG] Found Auction: ${!!auction}, Found User: ${!!user}`);
-      await redisClient.del(lockKey);
-      return { success: false, message: 'Auction or User not found.' };
-    }
+    let newBalance, extended = false, newBidId, newBidUsername, newBidCreatedAt;
 
-    // if (auction.seller.toString() === user._id.toString()) {
-    //   await redisClient.del(lockKey);
-    //   return { success: false, message: 'Sellers cannot bid on their own auctions.' };
-    // }
+    try {
+      const auction = await AuctionItem.findById(auctionId).session(session);
+      const user = await User.findById(userId).session(session);
 
-    if (auction.status !== 'active' || new Date(auction.endTime) < new Date()) {
-      if (auction.status === 'active') {
-        auction.status = 'ended';
-        await auction.save();
+      if (!auction || !user) {
+        await session.abortTransaction();
+        session.endSession();
+        return { success: false, message: 'Auction or User not found.' };
       }
-      await redisClient.del(lockKey);
-      return { success: false, message: 'This auction has already ended.' };
-    }
 
-    if (bidAmount <= auction.currentPrice) {
-      await redisClient.del(lockKey);
-      return { success: false, message: `Bid must be higher than $${auction.currentPrice}` };
-    }
-
-    if (user.walletBalance < bidAmount) {
-      await redisClient.del(lockKey);
-      return { success: false, message: 'Insufficient funds in wallet!' };
-    }
-
-    // Refund previous bidder
-    if (auction.highestBidder) {
-      const previousBidder = await User.findById(auction.highestBidder);
-      if (previousBidder) {
-        previousBidder.walletBalance += auction.currentPrice;
-        await previousBidder.save();
-        await Transaction.create({
-          user: previousBidder._id,
-          type: 'refund',
-          amount: auction.currentPrice,
-          auction: auctionId,
-          description: `Outbid refund for ${auction.title}`
-        });
+      if (auction.status !== 'active' || new Date(auction.endTime) < new Date()) {
+        if (auction.status === 'active') {
+          auction.status = 'ended';
+          await auction.save({ session });
+        }
+        await session.abortTransaction();
+        session.endSession();
+        return { success: false, message: 'This auction has already ended.' };
       }
+
+      if (bidAmount <= auction.currentPrice) {
+        await session.abortTransaction();
+        session.endSession();
+        return { success: false, message: `Bid must be higher than $${auction.currentPrice}` };
+      }
+
+      if (user.walletBalance < bidAmount) {
+        await session.abortTransaction();
+        session.endSession();
+        return { success: false, message: 'Insufficient funds in wallet!' };
+      }
+
+      // Refund previous bidder
+      if (auction.highestBidder) {
+        const previousBidder = await User.findById(auction.highestBidder).session(session);
+        if (previousBidder) {
+          previousBidder.walletBalance += auction.currentPrice;
+          await previousBidder.save({ session });
+          await Transaction.create([{
+            user: previousBidder._id,
+            type: 'refund',
+            amount: auction.currentPrice,
+            auction: auctionId,
+            description: `Outbid refund for ${auction.title}`
+          }], { session });
+        }
+      }
+
+      // Deduct from new bidder
+      user.walletBalance -= bidAmount;
+      await user.save({ session });
+      await Transaction.create([{
+        user: user._id,
+        type: 'bid',
+        amount: bidAmount,
+        auction: auctionId,
+        description: `Bid placed on ${auction.title}`
+      }], { session });
+
+      newBalance = user.walletBalance;
+
+      // Anti-Sniper Logic
+      const timeRemainingMs = new Date(auction.endTime).getTime() - Date.now();
+      if (timeRemainingMs < 30000) {
+        auction.endTime = new Date(Date.now() + 120000); 
+        extended = true;
+      }
+
+      // Update Auction Item
+      auction.currentPrice = bidAmount;
+      auction.highestBidder = user._id;
+      await auction.save({ session });
+
+      // Create Bid record
+      const [newBid] = await Bid.create([{
+        auction: auctionId,
+        user: user._id,
+        amount: bidAmount
+      }], { session });
+
+      newBidId = newBid._id;
+      newBidUsername = user.username;
+      newBidCreatedAt = newBid.createdAt;
+
+      await session.commitTransaction();
+      session.endSession();
+
+    } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
+      throw error; // Rethrow to be caught by outer try-catch
     }
 
-    // Deduct from new bidder
-    user.walletBalance -= bidAmount;
-    await user.save();
-    await Transaction.create({
-      user: user._id,
-      type: 'bid',
-      amount: bidAmount,
-      auction: auctionId,
-      description: `Bid placed on ${auction.title}`
-    });
-
-    // Anti-Sniper Logic
-    const timeRemainingMs = new Date(auction.endTime).getTime() - Date.now();
-    let extended = false;
-    if (timeRemainingMs < 30000) {
-      auction.endTime = new Date(Date.now() + 120000); 
-      extended = true;
-    }
-
-    // Update Auction Item
-    auction.currentPrice = bidAmount;
-    auction.highestBidder = user._id;
-    await auction.save();
-
-    // Create Bid record
-    const newBid = await Bid.create({
-      auction: auctionId,
-      user: user._id,
-      amount: bidAmount
-    });
-    await newBid.populate('user', 'username');
-
-    await redisClient.del(lockKey);
-
+    // Now safely emit socket events using committed data
     const updatedAuction = await AuctionItem.findById(auctionId).populate('highestBidder', 'username');
 
     io.to(auctionId).emit('bid_update', {
@@ -110,19 +127,24 @@ const processBid = async (auctionId, userId, bidAmount, io) => {
       message: extended ? `Anti-Sniper Activated! Auction extended by 2 mins!` : `New bid of $${bidAmount} by ${updatedAuction.highestBidder.username}!`,
       newEndTime: extended ? updatedAuction.endTime : null,
       newBidRecord: {
-        id: newBid._id,
-        username: newBid.user.username,
-        amount: newBid.amount,
-        createdAt: newBid.createdAt
+        id: newBidId,
+        username: newBidUsername,
+        amount: bidAmount,
+        createdAt: newBidCreatedAt
       }
     });
 
-    return { success: true, newBalance: user.walletBalance };
+    return { success: true, newBalance };
 
   } catch (error) {
     console.error('Process Bid Error:', error);
-    await redisClient.del(lockKey);
     return { success: false, message: 'An error occurred processing your bid.' };
+  } finally {
+    // Robust Redis Lock Release
+    const currentValue = await redisClient.get(lockKey);
+    if (currentValue === lockValue) {
+      await redisClient.del(lockKey);
+    }
   }
 };
 
