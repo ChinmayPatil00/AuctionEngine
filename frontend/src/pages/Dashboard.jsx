@@ -7,6 +7,7 @@ const Dashboard = () => {
   const [activeAuctions, setActiveAuctions] = useState([]);
   const [upcomingAuctions, setUpcomingAuctions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showSeedNotice, setShowSeedNotice] = useState(true);
   const { api, user } = useContext(AuthContext);
 
   useEffect(() => {
@@ -96,6 +97,17 @@ const Dashboard = () => {
   return (
     <div className="animate-fade-in-down pb-4">
       
+      {showSeedNotice && (
+        <div className="bg-accent/10 border border-accent/20 text-accent px-4 py-3 rounded relative max-w-4xl mx-auto mt-4 mb-6 flex justify-between items-start sm:items-center flex-col sm:flex-row gap-4" role="alert">
+          <span className="block sm:inline font-mono text-sm">
+            <strong>Welcome!</strong> To populate the marketplace with live auctions and high-quality images, please scroll to the very bottom of the page and click the <strong className="text-white">"[Dev Tool] Seed Database with Test Data"</strong> link in the footer.
+          </span>
+          <button onClick={() => setShowSeedNotice(false)} className="text-accent hover:text-white font-bold text-xl leading-none">
+            &times;
+          </button>
+        </div>
+      )}
+
       {/* Hero Section */}
       <div className="relative py-12 md:py-16 mb-8 md:mb-12 border-b border-gray-800 flex flex-col items-center justify-center text-center bg-black">
         <div className="relative z-10 flex flex-col items-center justify-center w-full px-4 max-w-4xl mx-auto">
