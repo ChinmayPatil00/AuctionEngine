@@ -1,66 +1,69 @@
-# Creator Flow 🚀
+# Auction Engine
 
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
-![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
-![Socket.io](https://img.shields.io/badge/Socket.io-010101?style=for-the-badge&logo=socket.io&logoColor=white)
-![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
+![Auction Engine Live Demo](https://auction-engine-app.vercel.app/)
 
-Real-time MERN marketplace for creators featuring zero-latency WebSockets, AI automation, and a secure transaction ledger.
+Auction Engine is a high-performance, real-time distributed marketplace built for creators. It features zero-latency bidding, robust concurrency control, and absolute financial ledger integrity.
 
-## ✨ Features
+## 🚀 Live Demo
+- **Frontend:** [https://auction-engine-app.vercel.app/](https://auction-engine-app.vercel.app/)
+- **Backend:** [https://creatorflow-1.onrender.com](https://creatorflow-1.onrender.com)
 
-- **Real-Time Bidding**: Powered by `Socket.io`, bids are broadcasted instantly to all connected clients in the room without page refreshes.
-- **Autonomous AI Bots**: A backend `BotEngine` dynamically monitors active auctions and deploys simulated AI buyers (e.g., *CryptoWhale*, *DubaiPrince*) to compete with human players based on randomized aggression thresholds.
-- **Anti-Sniper Protection**: Any bid placed within the last 30 seconds of an auction automatically extends the timer by 2 minutes, ensuring fair price discovery.
-- **Optimistic Wallet Sync**: Bidder wallet balances are dynamically deducted and refunded via WebSocket events in real-time.
-- **Concurrent Locking**: Redis-backed distributed locks (`lock:auction:{id}`) prevent race conditions if multiple users attempt to bid on the exact same millisecond.
+## ✨ Core Features
 
-## 🏗️ Architecture
+* **Zero-Latency Live Bidding:** Utilizes persistent WebSocket TCP connections (Socket.io) to instantly synchronize the bidding state across all connected clients without HTTP polling delays.
+* **Concurrency & Race Condition Mitigation:** Implements distributed mutex locks via **Redis**. Even if multiple users attempt to bid at the exact same millisecond, the Redis lock ensures sequential execution, eliminating duplicate charges and phantom bids.
+* **Financial Ledger Integrity:** Every bid transaction (deducting funds, recording the bid, and updating the auction) is wrapped in a **MongoDB ACID Transaction** (`mongoose.startSession`). If any part of the process fails, the entire transaction rolls back automatically.
+* **Algorithmic Anti-Sniping:** Automatically extends the auction timer by 120 seconds if a bid is placed in the final 30 seconds of an auction, ensuring fair price discovery.
+* **Performance Optimizations:** Leverages dynamic bundle splitting (`React.lazy`) and Skeleton UI architectures for near-instant Time-To-Interactive (TTI) metrics.
 
-```mermaid
-graph TD
-    Client[React Client] <-->|WebSockets| SocketIO(Socket.io Server)
-    Client -->|REST API| Express(Express Server)
-    
-    SocketIO -->|Acquire Lock| Redis[(Redis)]
-    Express --> DB[(MongoDB)]
-    
-    subgraph Background Workers
-        BotEngine[Autonomous Bot Engine] -->|Monitors| DB
-        BotEngine -->|Injects Bids| SocketIO
-        AuctionResolver[Auction End Resolver] -->|Finalizes| DB
-    end
-```
+## 🛠️ Technology Stack
+* **Frontend:** React.js, Vite, Tailwind CSS
+* **Backend:** Node.js, Express.js
+* **Database:** MongoDB Atlas (ACID Transactions enabled)
+* **Caching & Locking:** Redis Cloud
+* **Real-time Engine:** Socket.io
+* **Hosting:** Vercel (Frontend), Render (Backend)
 
-## 🚀 Quick Start (Local Development)
+## 📦 Installation & Setup
 
-### 1. Clone the repository
-```bash
-git clone https://github.com/ChinmayPatil00/AuctionEngine.git
-cd AuctionEngine
-```
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/ChinmayPatil00/AuctionEngine.git
+   cd AuctionEngine
+   ```
 
-### 2. Setup the Backend
-```bash
-cd backend
-npm install
-```
-Create a `.env` file in the `backend` directory (refer to `.env.example`).
-```bash
-npm start
-```
+2. **Install Dependencies**
+   ```bash
+   # Install backend dependencies
+   cd backend
+   npm install
 
-### 3. Setup the Frontend
-Open a new terminal window.
-```bash
-cd frontend
-npm install
-npm run dev
-```
+   # Install frontend dependencies
+   cd ../frontend
+   npm install
+   ```
 
-## 🌐 Production Deployment
-- **Frontend**: Deployed on Vercel. 
-- **Backend**: Containerized Web Service on Render.
-- **Database**: MongoDB Atlas.
-- **Cache**: Redis Cloud.
+3. **Environment Variables**
+   Create a `.env` file in the `backend` directory:
+   ```env
+   MONGO_URI=your_mongodb_connection_string
+   REDIS_URL=your_redis_cloud_url
+   JWT_SECRET=your_jwt_secret
+   PORT=5000
+   ```
+   Create a `.env` file in the `frontend` directory:
+   ```env
+   VITE_API_URL=http://localhost:5000
+   ```
+
+4. **Run the Development Servers**
+   ```bash
+   # Start the backend (from /backend)
+   npm run dev
+
+   # Start the frontend (from /frontend)
+   npm run dev
+   ```
+
+## 📄 License
+This project is licensed under the MIT License.
