@@ -67,21 +67,51 @@ const startBotEngine = async (io) => {
   console.log('[BotEngine] Initializing Autonomous Bidding Engine...');
   await seedBots();
   
+  const isReplicaSet = ['ReplicaSetWithPrimary', 'ReplicaSetNoPrimary', 'Sharded'].includes(
+    mongoose.connection.client?.topology?.description?.type
+  );
+
+  let pollingStarted = false;
+  const startPolling = () => {
+    if (pollingStarted) return;
+    pollingStarted = true;
+    console.warn('[BotEngine] ⚠️ Change Streams not supported (no replica set). Falling back to Polling Mode.');
+    setInterval(async () => {
+      try {
+        const activeAuctions = await AuctionItem.find({ status: 'active', endTime: { $gt: new Date() } });
+        for (const auction of activeAuctions) {
+          await simulateBotBids(auction, io);
+        }
+      } catch (error) {
+        console.error('[BotEngine] Polling Error:', error);
+      }
+    }, 8000);
+  };
+
+  if (!isReplicaSet) {
+    startPolling();
+    return;
+  }
+
   try {
-    // Attempt to use MongoDB Change Streams for Event-Driven architecture (requires Replica Set)
+    // Event-Driven architecture with MongoDB Change Streams (on Atlas / Replica Set)
     const changeStream = AuctionItem.watch([
       { $match: { 'operationType': { $in: ['insert', 'update'] } } }
     ]);
+
+    changeStream.on('error', (err) => {
+      console.warn('[BotEngine] ChangeStream error encountered:', err.message);
+      try { changeStream.close(); } catch (_) {}
+      startPolling();
+    });
     
     console.log('[BotEngine] ✅ Change Streams activated! Engine is now purely event-driven (0% Idle CPU).');
     
     changeStream.on('change', async (change) => {
-      // If a new auction is created or an existing auction receives a bid, wake up the bots
       try {
         const activeAuctions = await AuctionItem.find({ status: 'active' });
         for (const auction of activeAuctions) {
           if (new Date(auction.endTime) > new Date()) {
-            // Random delay to make it feel human (1 to 4 seconds)
             setTimeout(() => {
               simulateBotBids(auction, io);
             }, Math.floor(Math.random() * 3000) + 1000);
@@ -93,18 +123,7 @@ const startBotEngine = async (io) => {
     });
     
   } catch (err) {
-    // Fallback to polling if local MongoDB doesn't support Change Streams
-    console.warn('[BotEngine] ⚠️ Change Streams not supported (no replica set). Falling back to Polling Mode (Not recommended for high scale).');
-    setInterval(async () => {
-      try {
-        const activeAuctions = await AuctionItem.find({ status: 'active', endTime: { $gt: new Date() } });
-        for (const auction of activeAuctions) {
-          await simulateBotBids(auction, io);
-        }
-      } catch (error) {
-        console.error('[BotEngine] Polling Error:', error);
-      }
-    }, 5000);
+    startPolling();
   }
 };
 

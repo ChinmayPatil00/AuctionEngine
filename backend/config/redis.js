@@ -13,6 +13,10 @@ class MockRedisClient {
     console.log('Mock Redis connected successfully (In-Memory Fallback active)');
   }
 
+  async get(key) {
+    return this.store.get(key) || null;
+  }
+
   // Mimics Redis SET NX PX
   async set(key, value, options) {
     if (options?.NX && this.store.has(key)) {

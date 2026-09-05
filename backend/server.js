@@ -1,10 +1,10 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
-const mongoose = require('mongoose');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 require('dotenv').config();
+
 const connectDB = require('./config/db');
 const { connectRedis } = require('./config/redis');
 const { setupBiddingSocket } = require('./socket/bidding');
@@ -39,7 +39,7 @@ app.use('/api/auth/register', authLimiter);
 
 // Basic Route
 app.get('/api/health', (req, res) => {
-  res.status(200).json({ status: 'ok', message: 'Auction Engine Backend Running' });
+  res.status(200).json({ status: 'ok', message: 'Auction Engine Backend Running', database: 'MongoDB Atlas' });
 });
 
 // API Routes
@@ -52,6 +52,20 @@ setupBiddingSocket(io);
 // Start Background Workers
 startAuctionResolver(io);
 startBotEngine(io);
+
+// Error Handling Middleware
+app.use((err, req, res, next) => {
+  console.error('Unhandled Express Error:', err);
+  res.status(err.status || 500).json({ message: err.message || 'Internal Server Error' });
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
 
 const PORT = process.env.PORT || 5000;
 

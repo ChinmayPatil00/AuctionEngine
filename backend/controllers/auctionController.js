@@ -19,7 +19,7 @@ const createAuction = async (req, res) => {
       imageUrl: imageUrl || 'https://images.pexels.com/photos/1036622/pexels-photo-1036622.jpeg?auto=compress&cs=tinysrgb&w=800',
       startingPrice,
       currentPrice: startingPrice,
-      seller: req.user._id,
+      seller: req.user._id || req.user.id,
       startTime,
       endTime,
     });
@@ -189,7 +189,7 @@ const seedAuctions = async (req, res) => {
     ];
 
     await AuctionItem.insertMany([...liveAuctions, ...upcomingAuctions, ...endedAuctions]);
-    res.status(200).json({ message: 'Successfully seeded Upcoming and Ended auctions to your database!' });
+    res.status(200).json({ message: 'Successfully seeded Live, Upcoming, and Ended auctions to your database!' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

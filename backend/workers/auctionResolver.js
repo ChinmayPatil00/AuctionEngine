@@ -26,14 +26,14 @@ const startAuctionResolver = (io) => {
 
         await auction.save();
 
-        console.log(`Auction ${auction._id} resolved and closed.`);
+        console.log(`[AuctionResolver] Auction ${auction._id} resolved and closed.`);
 
         // Notify anyone currently in the room
         if (io) {
           io.to(auction._id.toString()).emit('auction_ended', {
             message: 'This auction has officially concluded.',
             winningBid: auction.currentPrice,
-            winner: auction.highestBidder // Would populate this for a real app
+            winner: auction.highestBidder
           });
         }
       }

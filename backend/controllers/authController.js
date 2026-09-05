@@ -34,6 +34,7 @@ const registerUser = async (req, res) => {
     if (user) {
       res.status(201).json({
         _id: user.id,
+        id: user.id,
         username: user.username,
         email: user.email,
         walletBalance: user.walletBalance,
@@ -56,6 +57,7 @@ const loginUser = async (req, res) => {
     if (user && (await bcrypt.compare(password, user.password))) {
       res.json({
         _id: user.id,
+        id: user.id,
         username: user.username,
         email: user.email,
         walletBalance: user.walletBalance,
@@ -71,7 +73,10 @@ const loginUser = async (req, res) => {
 
 const getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select('-password');
+    const user = await User.findById(req.user._id || req.user.id).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
     res.json(user);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -80,7 +85,7 @@ const getMe = async (req, res) => {
 
 const getUserHistory = async (req, res) => {
   try {
-    const transactions = await Transaction.find({ user: req.user._id })
+    const transactions = await Transaction.find({ user: req.user._id || req.user.id })
       .populate('auction', 'title imageUrl')
       .sort({ createdAt: -1 });
     res.status(200).json(transactions);
@@ -96,7 +101,10 @@ const depositFunds = async (req, res) => {
       return res.status(400).json({ message: 'Invalid deposit amount' });
     }
 
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user._id || req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
     user.walletBalance += Number(amount);
     await user.save();
 
